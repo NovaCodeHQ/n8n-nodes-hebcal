@@ -104,7 +104,7 @@ Zmanim → Daily Times for New York on `2024-03-08` includes:
 		"chatzot": "2024-03-08T17:06:54.000Z"
 	},
 	"localTimes": {
-		"sunrise": "2024-03-08T06:18:04-05:00[America/New_York]"
+		"sunrise": "2024-03-08T06:18:04-05:00"
 	}
 }
 ```

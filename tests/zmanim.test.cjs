@@ -98,8 +98,8 @@ test('daily times match verified New York fixtures and ordering', async () => {
 	const [result] = await executeZmanim(mockCtx([zmanimParams('2024-03-08')]), 'day', 0);
 	assert.equal(result.times.sunrise, '2024-03-08T11:18:04.000Z');
 	assert.equal(result.times.sunset, '2024-03-08T22:55:43.000Z');
-	assert.equal(result.localTimes.sunrise, '2024-03-08T06:18:04-05:00[America/New_York]');
-	assert.equal(result.localTimes.sunset, '2024-03-08T17:55:43-05:00[America/New_York]');
+	assert.equal(result.localTimes.sunrise, '2024-03-08T06:18:04-05:00');
+	assert.equal(result.localTimes.sunset, '2024-03-08T17:55:43-05:00');
 	assert.ok(result.times.alotHaShachar < result.times.sunrise);
 	assert.ok(result.times.sunrise < result.times.chatzot);
 	assert.ok(result.times.chatzot < result.times.sunset);
@@ -153,7 +153,7 @@ test('temporal hours expose start and millisecond length', async () => {
 		0,
 	);
 	assert.equal(fixed.start, '2024-03-08T10:06:04.000Z');
-	assert.equal(fixed.startLocal, '2024-03-08T05:06:04-05:00[America/New_York]');
+	assert.equal(fixed.startLocal, '2024-03-08T05:06:04-05:00');
 	assert.ok(fixed.hourMs > 0);
 	const [day] = await executeZmanim(mockCtx([zmanimParams('2024-03-08')]), 'day', 0);
 	const [byDeg] = await executeZmanim(
@@ -170,9 +170,9 @@ test('lunar times are date-relevant with null away from the molad', async () => 
 	assert.equal(far.tchilas3Days, null);
 	assert.equal(far.sof15Days, null);
 	const [moladDay] = await executeZmanim(mockCtx([zmanimParams('2024-04-08')]), 'lunar', 0);
-	assert.equal(moladDay.moladMoment, '2024-04-08T16:36:26.837-04:00[America/New_York]');
+	assert.equal(moladDay.moladMoment, '2024-04-08T16:36:26.837-04:00');
 	const [third] = await executeZmanim(mockCtx([zmanimParams('2024-04-11')]), 'lunar', 0);
-	assert.equal(third.tchilas3Days, '2024-04-11T16:36:26.837-04:00[America/New_York]');
+	assert.equal(third.tchilas3Days, '2024-04-11T16:36:26.837-04:00');
 	const [adjusted] = await executeZmanim(
 		mockCtx([
 			zmanimParams('2024-04-11', {
@@ -183,10 +183,10 @@ test('lunar times are date-relevant with null away from the molad', async () => 
 		'lunar',
 		0,
 	);
-	assert.equal(adjusted.tchilas3Days, '2024-04-11T20:00:00-04:00[America/New_York]');
+	assert.equal(adjusted.tchilas3Days, '2024-04-11T20:00:00-04:00');
 	const [last] = await executeZmanim(mockCtx([zmanimParams('2024-04-23')]), 'lunar', 0);
-	assert.equal(last.sofBetweenMoldos, '2024-04-23T10:58:28.503-04:00[America/New_York]');
-	assert.equal(last.sof15Days, '2024-04-23T16:36:26.837-04:00[America/New_York]');
+	assert.equal(last.sofBetweenMoldos, '2024-04-23T10:58:28.503-04:00');
+	assert.equal(last.sof15Days, '2024-04-23T16:36:26.837-04:00');
 });
 
 test('astronomy exposes twilight ordering, transit, and solar position', async () => {
@@ -198,7 +198,7 @@ test('astronomy exposes twilight ordering, transit, and solar position', async (
 	assert.ok(astro.temporalHourMs > 0);
 	assert.ok(astro.solarPosition.elevation > 40 && astro.solarPosition.elevation < 50);
 	assert.ok(astro.solarPosition.azimuth > 170 && astro.solarPosition.azimuth < 185);
-	assert.equal(astro.offsetApplied.time, '2024-03-08T06:18:04.798-05:00[America/New_York]');
+	assert.equal(astro.offsetApplied.time, '2024-03-08T06:18:04.798-05:00');
 });
 
 test('format exposes timezone offset, DST change, and sunset-aware date', async () => {
