@@ -16,7 +16,7 @@ Powered by [`@hebcal/core`](https://github.com/hebcal/hebcal-es6) and its compan
 n8n-nodes-hebcal
 ```
 
-Built as an n8n community node package for **self-hosted n8n** instances only.
+Built as an n8n community node package for **self-hosted n8n** instances only. 
 
 ## Self-hosted only
 
