@@ -16,7 +16,7 @@ Powered by [`@hebcal/core`](https://github.com/hebcal/hebcal-es6) and its compan
 n8n-nodes-hebcal
 ```
 
-Built as an n8n community node package for **self-hosted n8n** instances only. 
+Built as an n8n community node package for **self-hosted n8n** instances only.
 
 ## Self-hosted only
 
@@ -99,9 +99,14 @@ Zmanim → Daily Times for New York on `2024-03-08` includes:
 		"sunrise": "2024-03-08T11:18:04.000Z",
 		"sunset": "2024-03-08T22:55:43.000Z",
 		"chatzot": "2024-03-08T17:06:54.000Z"
+	},
+	"localTimes": {
+		"sunrise": "2024-03-08T06:18:04-05:00[America/New_York]"
 	}
 }
 ```
+
+Every Zmanim time is returned twice: `times` in UTC and `localTimes` in the location's timezone.
 
 ## Compatibility
 

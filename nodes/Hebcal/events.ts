@@ -1,6 +1,7 @@
 import type { IDataObject } from 'n8n-workflow';
 import { serializeHebrewDate } from './dateUtils';
 import type { HebcalCore, HebrewDate } from './library';
+import { dateToLocalIso } from './timeUtils';
 
 export type HebcalEvent = InstanceType<HebcalCore['Event']>;
 export type HebcalMolad = InstanceType<HebcalCore['Molad']>;
@@ -91,8 +92,11 @@ function serializeTimedFields(event: HebcalEvent): IDataObject | null {
 		linkedEvent?: HebcalEvent;
 	};
 	const location = timed.location;
+	const tzid = location?.getTzid?.();
+	const validTime = timed.eventTime instanceof Date && !Number.isNaN(timed.eventTime.getTime());
 	return {
 		eventTime: dateToIso(timed.eventTime),
+		eventTimeLocal: validTime && tzid ? dateToLocalIso(timed.eventTime, tzid) : null,
 		eventTimeStr: timed.eventTimeStr ?? null,
 		timeLocal: timed.fmtTime ?? null,
 		timezone: location?.getTzid?.() ?? null,
@@ -105,9 +109,7 @@ function serializeTimedFields(event: HebcalEvent): IDataObject | null {
 	};
 }
 
-function serializeLearningFields(
-	event: HebcalEvent & Record<string, unknown>,
-): IDataObject | null {
+function serializeLearningFields(event: HebcalEvent & Record<string, unknown>): IDataObject | null {
 	const daf = event.daf as
 		| { name?: unknown; blatt?: unknown; cycle?: unknown; ed?: unknown }
 		| undefined;
@@ -128,9 +130,7 @@ function serializeLearningFields(
 				? {
 						name: typeof daf.name === 'string' ? daf.name : null,
 						blatt:
-							typeof daf.blatt === 'string' || typeof daf.blatt === 'number'
-								? daf.blatt
-								: null,
+							typeof daf.blatt === 'string' || typeof daf.blatt === 'number' ? daf.blatt : null,
 						cycle: typeof daf.cycle === 'number' ? daf.cycle : null,
 						edition: typeof daf.ed === 'string' ? daf.ed : null,
 					}

@@ -18,6 +18,19 @@ export function dateToIsoString(date: unknown): string | null {
 	return date.toISOString();
 }
 
+/**
+ * The same instant rendered in a target timezone, e.g.
+ * `2024-03-08T06:18:04-05:00[America/New_York]`. Null for missing times,
+ * exactly mirroring {@link dateToIsoString}.
+ */
+export function dateToLocalIso(date: unknown, tzid: string): string | null {
+	if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null;
+	return getTemporal()
+		.Instant.fromEpochMilliseconds(date.getTime())
+		.toZonedDateTimeISO(tzid)
+		.toString();
+}
+
 export function temporalToString(value: unknown): string | null {
 	if (value === null || value === undefined) return null;
 	try {

@@ -97,6 +97,8 @@ test('daily times match verified New York fixtures and ordering', async () => {
 	const [result] = await executeZmanim(mockCtx([zmanimParams('2024-03-08')]), 'day', 0);
 	assert.equal(result.times.sunrise, '2024-03-08T11:18:04.000Z');
 	assert.equal(result.times.sunset, '2024-03-08T22:55:43.000Z');
+	assert.equal(result.localTimes.sunrise, '2024-03-08T06:18:04-05:00[America/New_York]');
+	assert.equal(result.localTimes.sunset, '2024-03-08T17:55:43-05:00[America/New_York]');
 	assert.ok(result.times.alotHaShachar < result.times.sunrise);
 	assert.ok(result.times.sunrise < result.times.chatzot);
 	assert.ok(result.times.chatzot < result.times.sunset);
@@ -121,6 +123,7 @@ test('polar day returns null instead of false times', async () => {
 	);
 	assert.equal(result.times.sunrise, null);
 	assert.equal(result.times.sunset, null);
+	assert.equal(result.localTimes.sunrise, null);
 });
 
 test('custom calculations agree with daily times', async () => {
@@ -133,6 +136,7 @@ test('custom calculations agree with daily times', async () => {
 		0,
 	);
 	assert.equal(angle.result, day.times.tzeit);
+	assert.equal(angle.resultLocal, day.localTimes.tzeit);
 	const [offset] = await executeZmanim(
 		mockCtx([zmanimParams('2024-03-08', { calculation: 'sunsetOffset', offsetMinutes: -18 })]),
 		'custom',
@@ -148,6 +152,7 @@ test('temporal hours expose start and millisecond length', async () => {
 		0,
 	);
 	assert.equal(fixed.start, '2024-03-08T10:06:04.000Z');
+	assert.equal(fixed.startLocal, '2024-03-08T05:06:04-05:00[America/New_York]');
 	assert.ok(fixed.hourMs > 0);
 	const [day] = await executeZmanim(mockCtx([zmanimParams('2024-03-08')]), 'day', 0);
 	const [byDeg] = await executeZmanim(

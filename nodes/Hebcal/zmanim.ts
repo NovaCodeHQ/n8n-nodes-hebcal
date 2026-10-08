@@ -9,6 +9,7 @@ import { loadHebcalCore } from './library';
 import { locationProperties, resolveLocation, serializeLocation } from './locations';
 import {
 	dateToIsoString,
+	dateToLocalIso,
 	noonInTimezone,
 	parseOptionalInstant,
 	parseZonedInstant,
@@ -338,15 +339,22 @@ export async function executeZmanim(
 				throw new RangeError('Tzeit angle must be a positive number');
 			}
 			const times: IDataObject = {};
+			const localTimes: IDataObject = {};
+			const tzid = location.getTzid();
 			for (const method of DAY_TIMES) {
-				times[method] = dateToIsoString(zmanim[method]());
+				const value = zmanim[method]();
+				times[method] = dateToIsoString(value);
+				localTimes[method] = dateToLocalIso(value, tzid);
 			}
-			times.tzeit = dateToIsoString(zmanim.tzeit(tzeitAngle));
+			const tzeit = zmanim.tzeit(tzeitAngle);
+			times.tzeit = dateToIsoString(tzeit);
+			localTimes.tzeit = dateToLocalIso(tzeit, tzid);
 			return [
 				{
 					date: serializeHebrewDate(date),
 					location: serializeLocation(location),
 					times,
+					localTimes,
 					temporal: {
 						alotHaShachar72: temporalToString(zmanim.alotHaShachar72zdt()),
 						tzeit72: temporalToString(zmanim.tzeit72()),
@@ -364,12 +372,14 @@ export async function executeZmanim(
 				if (!Number.isFinite(angle) || angle <= 0) {
 					throw new RangeError('Angle must be a positive number');
 				}
+				const result = zmanim.timeAtAngle(angle, rising);
 				return [
 					{
 						calculation,
 						angle,
 						rising,
-						result: dateToIsoString(zmanim.timeAtAngle(angle, rising)),
+						result: dateToIsoString(result),
+						resultLocal: dateToLocalIso(result, location.getTzid()),
 					},
 				];
 			}
@@ -380,11 +390,13 @@ export async function executeZmanim(
 				);
 				const roundMinute = ctx.getNodeParameter('roundMinute', itemIndex) as boolean;
 				const forceSeaLevel = ctx.getNodeParameter('forceSeaLevel', itemIndex) as boolean;
+				const result = zmanim[calculation](offset, roundMinute, forceSeaLevel);
 				return [
 					{
 						calculation,
 						offsetMinutes: offset,
-						result: dateToIsoString(zmanim[calculation](offset, roundMinute, forceSeaLevel)),
+						result: dateToIsoString(result),
+						resultLocal: dateToLocalIso(result, location.getTzid()),
 					},
 				];
 			}
@@ -395,7 +407,14 @@ export async function executeZmanim(
 			if (method === 'fixed72') {
 				const forceSeaLevel = ctx.getNodeParameter('temporalSeaLevel', itemIndex) as boolean;
 				const [start, hourMs] = zmanim.getTemporalHour72(forceSeaLevel);
-				return [{ method, start: dateToIsoString(start), hourMs }];
+				return [
+					{
+						method,
+						start: dateToIsoString(start),
+						startLocal: dateToLocalIso(start, location.getTzid()),
+						hourMs,
+					},
+				];
 			}
 			if (method === 'byDegrees') {
 				const angle = ctx.getNodeParameter('angle', itemIndex) as number;
@@ -403,7 +422,15 @@ export async function executeZmanim(
 					throw new RangeError('Angle must be a positive number');
 				}
 				const [start, hourMs] = zmanim.getTemporalHourByDeg(angle);
-				return [{ method, angle, start: dateToIsoString(start), hourMs }];
+				return [
+					{
+						method,
+						angle,
+						start: dateToIsoString(start),
+						startLocal: dateToLocalIso(start, location.getTzid()),
+						hourMs,
+					},
+				];
 			}
 			throw new RangeError(`Unsupported hour method: ${method}`);
 		}
