@@ -1,0 +1,13 @@
+{
+	"node": "n8n-nodes-hebcal",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Other"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://hebcal.github.io/api/core/modules.html"
+			}
+		]
+	}
+}

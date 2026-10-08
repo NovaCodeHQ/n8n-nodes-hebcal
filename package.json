@@ -1,0 +1,66 @@
+{
+	"name": "n8n-nodes-hebcal",
+	"version": "2.0.0",
+	"description": "Jewish calendar, Hebrew date, Torah reading and zmanim calculations for n8n",
+	"license": "GPL-2.0",
+	"homepage": "https://github.com/NovaCodeHQ/n8n-nodes-hebcal",
+	"keywords": [
+		"n8n-community-node-package",
+		"hebcal",
+		"jewish-calendar",
+		"hebrew-date",
+		"torah",
+		"zmanim"
+	],
+	"author": {
+		"name": "NovaCodeHQ",
+		"email": "support@novacodehq.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/NovaCodeHQ/n8n-nodes-hebcal"
+	},
+	"scripts": {
+		"test": "node --test tests/*.test.cjs",
+		"build": "n8n-node build && node scripts/bundle-hebcal.mjs",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist",
+		"CHANGELOG.md"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": false,
+		"nodes": [
+			"dist/nodes/Hebcal/Hebcal.node.js"
+		]
+	},
+	"devDependencies": {
+		"@hebcal/core": "6.13.1",
+		"@hebcal/hdate": "0.23.0",
+		"@hebcal/learning": "6.12.0",
+		"@hebcal/leyning": "10.1.0",
+		"@hebcal/locales": "6.5.3",
+		"@hebcal/triennial": "6.4.0",
+		"@n8n/node-cli": "*",
+		"esbuild": "0.28.2",
+		"eslint": "9.29.0",
+		"n8n-workflow": "^2.16.0",
+		"prettier": "3.6.2",
+		"release-it": "^19.0.4",
+		"temporal-polyfill": "1.0.5",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}
