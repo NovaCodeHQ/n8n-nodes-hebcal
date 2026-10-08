@@ -1,9 +1,15 @@
 import type { HDate } from '@hebcal/core' with { 'resolution-mode': 'import' };
+import type { ZipEntry } from 'zipcodes/lib/codes.js' with { 'resolution-mode': 'import' };
+import type tzLookup from 'tz-lookup' with { 'resolution-mode': 'import' };
 
 export type HebcalCore = typeof import('@hebcal/core', { with: { 'resolution-mode': 'import' } });
 export type HebcalHdate = typeof import('@hebcal/hdate', { with: { 'resolution-mode': 'import' } });
-export type HebcalLeyning = typeof import('@hebcal/leyning', { with: { 'resolution-mode': 'import' } });
-export type HebcalTriennial = typeof import('@hebcal/triennial', { with: { 'resolution-mode': 'import' } });
+export type HebcalLeyning = typeof import('@hebcal/leyning', {
+	with: { 'resolution-mode': 'import' }
+});
+export type HebcalTriennial = typeof import('@hebcal/triennial', {
+	with: { 'resolution-mode': 'import' }
+});
 export type HebrewDate = HDate;
 
 let packagesPromise: Promise<HebcalCore> | undefined;
@@ -46,4 +52,33 @@ export function loadHebcalLeyning(): Promise<HebcalLeyning> {
 export function loadHebcalTriennial(): Promise<HebcalTriennial> {
 	triennialPromise ??= import('@hebcal/triennial');
 	return triennialPromise;
+}
+
+export interface GeoData {
+	codes: Record<string, ZipEntry>;
+	tzLookup: typeof tzLookup;
+}
+
+let geoPromise: Promise<GeoData> | undefined;
+
+/**
+ * Load the offline geography data: the US ZIP code database and the
+ * coordinate-to-timezone lookup. Both are bundled, so resolution needs
+ * no network access.
+ */
+export function loadGeoData(): Promise<GeoData> {
+	geoPromise ??= (async () => {
+		const [{ codes }, tzModule] = await Promise.all([
+			import('zipcodes/lib/codes.js'),
+			import('tz-lookup'),
+		]);
+		// SAFETY: tz-lookup is a UMD module; under bundlers it surfaces as .default,
+		// under require() as the bare export. Both shapes are handled below.
+		const interop = tzModule as unknown as { default?: typeof tzLookup };
+		// SAFETY: same UMD interop as above; falls back to the bare export shape.
+		const tzLookupFn = interop.default ?? (tzModule as unknown as typeof tzLookup);
+		if (typeof tzLookupFn !== 'function') throw new RangeError('Timezone lookup failed to load');
+		return { codes, tzLookup: tzLookupFn };
+	})();
+	return geoPromise;
 }

@@ -26,6 +26,7 @@ execFileSync(
 			.filter((file) => file.endsWith('.ts'))
 			.map((file) => path.join(sourceDir, file)),
 		path.join(root, 'types/hebcal-locales.d.ts'),
+		path.join(root, 'types/zip-geo.d.ts'),
 	],
 	{ cwd: root, stdio: 'pipe' },
 );

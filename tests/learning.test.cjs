@@ -34,6 +34,7 @@ execFileSync(
 			'Hebcal.node.ts',
 		].map((file) => path.join(root, 'nodes/Hebcal', file)),
 		path.join(root, 'types/hebcal-locales.d.ts'),
+		path.join(root, 'types/zip-geo.d.ts'),
 	],
 	{ cwd: root, stdio: 'pipe' },
 );

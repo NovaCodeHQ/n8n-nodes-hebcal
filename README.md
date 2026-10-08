@@ -59,6 +59,9 @@ Hebcal libraries. There is nothing to authenticate and no external service to re
   Nach Yomi, Rambam, 929, and more) for single dates and ranges.
 - List operations offer a `Return All` toggle with a `Limit`, and the node honors `continueOnFail`
   with per-item error outputs.
+- **Location** is set per operation wherever times depend on it: pick a classic city, enter a
+  US ZIP code (resolved offline from a bundled ~5 MB database — no network lookups), or enter custom
+  coordinates with an IANA timezone.
 
 ## Installation
 
@@ -154,4 +157,4 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## License
 
 GPL-2.0 © [NovaCodeHQ](https://github.com/NovaCodeHQ). See [LICENSE](LICENSE) for the full text and
-bundled third-party attributions (@hebcal/\*, temporal-polyfill).
+bundled third-party attributions (@hebcal/\*, temporal-polyfill, zipcodes, tz-lookup).

@@ -35,6 +35,10 @@ Third-party components bundled in the distributed files:
   https://github.com/hebcal/hebcal-locales
 - temporal-polyfill 1.0.5 (MIT) — Copyright 2026 Adam Shaw.
   https://github.com/fullcalendar/temporal-polyfill
+- zipcodes 8.0.0 (BSD) — Copyright (c) 2007, Dav Glass.
+  https://github.com/davglass/zipcodes
+- tz-lookup 6.1.25 (CC0-1.0) — The Dark Sky Company (public domain).
+  https://github.com/darkskyapp/tz-lookup
 
 The complete corresponding source code of this package, including the
 build scripts used to bundle the components above, is available at

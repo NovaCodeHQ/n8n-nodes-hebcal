@@ -30,6 +30,7 @@ execFileSync(
 		path.join(root, 'nodes/Hebcal/holiday.ts'),
 		path.join(root, 'nodes/Hebcal/Hebcal.node.ts'),
 		path.join(root, 'types/hebcal-locales.d.ts'),
+		path.join(root, 'types/zip-geo.d.ts'),
 	],
 	{ cwd: root, stdio: 'pipe' },
 );

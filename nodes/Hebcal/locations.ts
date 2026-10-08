@@ -1,5 +1,5 @@
 import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workflow';
-import { loadHebcalCore, type HebcalCore } from './library';
+import { loadGeoData, loadHebcalCore, type HebcalCore } from './library';
 
 export type HebcalLocation = InstanceType<HebcalCore['Location']>;
 
@@ -90,7 +90,7 @@ export function locationProperties(
 	prefix: string,
 	resource: string,
 	operations: string[],
-	defaultMode: 'none' | 'classic' | 'custom' = 'none',
+	defaultMode: 'none' | 'classic' | 'custom' | 'zip' = 'none',
 ): INodeProperties[] {
 	const show = { resource: [resource], operation: operations };
 	return [
@@ -103,10 +103,11 @@ export function locationProperties(
 				{ name: 'None', value: 'none' },
 				{ name: 'Classic City', value: 'classic' },
 				{ name: 'Custom Coordinates', value: 'custom' },
+				{ name: 'US ZIP Code', value: 'zip' },
 			],
 			default: defaultMode,
 			description:
-				'Named cities use the built-in Hebcal list; custom locations need no external service',
+				'Named cities use the built-in Hebcal list; ZIP codes resolve offline with no external service',
 			displayOptions: { show },
 		},
 		{
@@ -117,6 +118,16 @@ export function locationProperties(
 			options: CLASSIC_CITIES.map((city) => ({ name: city, value: city })),
 			default: 'Jerusalem',
 			displayOptions: { show: { ...show, [`${prefix}Mode`]: ['classic'] } },
+		},
+		{
+			displayName: 'ZIP Code',
+			name: `${prefix}Zip`,
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: '10001',
+			description: 'US ZIP code, looked up in the bundled offline database',
+			displayOptions: { show: { ...show, [`${prefix}Mode`]: ['zip'] } },
 		},
 		{
 			displayName: 'Latitude',
@@ -163,6 +174,33 @@ export function locationProperties(
 	];
 }
 
+export async function locationFromZip(
+	zip: unknown,
+	Location: HebcalCore['Location'],
+): Promise<LocationInstance> {
+	const text = typeof zip === 'string' || typeof zip === 'number' ? String(zip).trim() : '';
+	const match = /^(\d{5})(?:-\d{4})?$/.exec(text);
+	if (!match) throw new RangeError('ZIP code must be a 5-digit US ZIP, for example 10001');
+	const { codes, tzLookup } = await loadGeoData();
+	const entry = codes[match[1]];
+	if (!entry) throw new RangeError(`Unknown US ZIP code: ${match[1]}`);
+	let tzid: string | undefined;
+	try {
+		tzid = tzLookup(entry.latitude, entry.longitude);
+	} catch {
+		tzid = undefined;
+	}
+	if (!tzid) throw new RangeError(`Could not determine the timezone for ZIP code ${match[1]}`);
+	return new Location(
+		entry.latitude,
+		entry.longitude,
+		false,
+		tzid,
+		`${entry.city}, ${entry.state} ${entry.zip}`,
+		'US',
+	);
+}
+
 export async function resolveLocation(
 	ctx: Pick<IExecuteFunctions, 'getNodeParameter'>,
 	itemIndex: number,
@@ -178,6 +216,11 @@ export async function resolveLocation(
 		const location = Location.lookup(city);
 		if (!location) throw new RangeError(`Unknown classic city: ${city}`);
 		return location;
+	}
+
+	if (mode === 'zip') {
+		const zip = ctx.getNodeParameter(`${prefix}Zip`, itemIndex) as string;
+		return locationFromZip(zip, Location);
 	}
 
 	if (mode === 'custom') {
